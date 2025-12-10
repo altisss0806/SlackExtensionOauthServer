@@ -6,8 +6,7 @@
 const CONFIG = {
     CLIENT_ID: '9129744248003.10087834431718',
     CLIENT_SECRET: '9ecc93f5bb1f8d7a7f247364970c03df',
-    // App-Level Token for Socket Mode (xapp-...)
-    APP_TOKEN: 'xapp-1-A0A2KQJCPM4-10092343186438-9bd6d07d1042b11e7347485571f8d221feee27e9404828cc9df5ead8bc63b6d3',
+    // App-Level Token is configured in the private extension code, not here (public)
     // User scopes for OAuth - these are the permissions required
     USER_SCOPES: 'channels:read,channels:history,chat:write,groups:read,groups:history,im:read,im:history,users:read,files:read',
     // This should match your GitHub Pages URL
