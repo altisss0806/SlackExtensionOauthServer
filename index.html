@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slack OAuth Callback</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        h1.success {
+            color: #4CAF50;
+        }
+
+        h1.error {
+            color: #f44336;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .team-name {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .token-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 24px 0;
+            position: relative;
+        }
+
+        .token-label {
+            color: #8b949e;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .token-value {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            color: #58a6ff;
+            word-break: break-all;
+            text-align: left;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+
+        .instructions {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #2196F3;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ol {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .instructions code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .vscode-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #007ACC 0%, #005A9E 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .vscode-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 122, 204, 0.3);
+        }
+
+        .error-details {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            color: #ff6b6b;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        #loading-state,
+        #success-state,
+        #error-state,
+        #no-code-state {
+            display: none;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .slack-signin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #4A154B 0%, #611f69 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(74, 21, 75, 0.4);
+            margin: 24px 0;
+        }
+
+        .slack-signin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(74, 21, 75, 0.5);
+        }
+
+        .slack-signin-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .slack-signin-btn svg {
+            flex-shrink: 0;
+        }
+
+        .scopes-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .scopes-info h3 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .scopes-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .scopes-info .scope-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .scopes-info .scope-icon {
+            font-size: 14px;
+        }
+
+        .redirect-info {
+            background: rgba(76, 175, 80, 0.15);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 16px 0;
+            font-size: 16px;
+        }
+
+        .countdown {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            padding: 2px 10px;
+            border-radius: 6px;
+            min-width: 20px;
+            animation: countdownPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes countdownPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .warning-box h3 {
+            color: #ffc107;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .warning-box ol {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            padding-left: 20px;
+        }
+
+        .warning-box li {
+            margin-bottom: 8px;
+        }
+
+        .warning-box code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .small-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
+        }
+
+        .small-text code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        #warning-state {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading-state">
+            <div class="spinner"></div>
+            <h1>Exchanging Token...</h1>
+            <p>Please wait while we complete the authentication process.</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="success-state">
+            <div class="icon">✅</div>
+            <h1 class="success">Authentication Successful!</h1>
+            <div class="team-name" id="team-display">Team: Loading...</div>
+
+            <p class="redirect-info">
+                🚀 Redirecting to VSCode in <span id="countdown" class="countdown">3</span> seconds...
+            </p>
+
+            <div class="token-box">
+                <div class="token-label">Your Access Token</div>
+                <div class="token-value" id="token-display">Loading...</div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="copy-btn" id="copy-btn" onclick="copyToken()">
+                    <span id="copy-icon">📋</span>
+                    <span id="copy-text">Copy Token</span>
+                </button>
+
+                <a id="vscode-link" class="vscode-link" style="display: none;">
+                    🚀 Open in VSCode Now
+                </a>
+            </div>
+
+            <div class="instructions">
+                <h3>📝 If redirect doesn't work:</h3>
+                <ol>
+                    <li>Click <strong>Copy Token</strong> above</li>
+                    <li>Go back to VSCode</li>
+                    <li>Paste the token when prompted</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state">
+            <div class="icon">❌</div>
+            <h1 class="error">Authentication Failed</h1>
+            <p>Something went wrong during the OAuth process.</p>
+            <div class="error-details" id="error-details">Unknown error</div>
+        </div>
+
+        <!-- No Code State - Show Sign In -->
+        <div id="no-code-state">
+            <div class="icon">💬</div>
+            <h1>Slack Chat for VSCode</h1>
+            <p>Connect your Slack workspace to start chatting directly from VSCode.</p>
+
+            <button class="slack-signin-btn" onclick="signInWithSlack()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 122.8 122.8">
+                    <path
+                        d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z"
+                        fill="#e01e5a" />
+                    <path
+                        d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z"
+                        fill="#36c5f0" />
+                    <path
+                        d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z"
+                        fill="#2eb67d" />
+                    <path
+                        d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z"
+                        fill="#ecb22e" />
+                </svg>
+                Sign in with Slack
+            </button>
+
+            <div class="scopes-info">
+                <h3>🔐 Required Permissions</h3>
+                <div class="scopes-grid">
+                    <div class="scope-item"><span class="scope-icon">📢</span> channels:read</div>
+                    <div class="scope-item"><span class="scope-icon">📜</span> channels:history</div>
+                    <div class="scope-item"><span class="scope-icon">✍️</span> chat:write</div>
+                    <div class="scope-item"><span class="scope-icon">🔒</span> groups:read</div>
+                    <div class="scope-item"><span class="scope-icon">👤</span> users:read</div>
+                    <div class="scope-item"><span class="scope-icon">📁</span> files:read</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning State - Local file:// protocol -->
+        <div id="warning-state">
+            <div class="icon">⚠️</div>
+            <h1 class="error">Local File Detected</h1>
+            <p>This page must be hosted on an HTTPS server to work with Slack OAuth.</p>
+
+            <div class="warning-box">
+                <h3>📋 To use this page:</h3>
+                <ol>
+                    <li>Upload these files to <strong>GitHub Pages</strong></li>
+                    <li>Add the GitHub Pages URL to your <strong>Slack App's Redirect URLs</strong></li>
+                    <li>Access the page via <code>https://</code> URL</li>
+                </ol>
+            </div>
+
+            <p class="small-text">Current URL: <code id="current-url"></code></p>
+            <script>document.getElementById('current-url').textContent = window.location.href;</script>
+        </div>
+    </div>
+
+    <script src="oauth.js"></script>
+</body>
+
+</html>
