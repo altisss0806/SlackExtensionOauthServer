@@ -6,6 +6,8 @@
 const CONFIG = {
     CLIENT_ID: '9129744248003.9138580590884',
     CLIENT_SECRET: 'bc02a48808164f27d6678047d871bbcb',
+    // App-Level Token for Socket Mode (xapp-...)
+    APP_TOKEN: 'xapp-1-A0A2KQJCPM4-10091340637654-90c6116568fb092eb9bd2e1cc2206a56c15af424523e933cb501fdf1b698c06f',
     // User scopes for OAuth - these are the permissions required
     USER_SCOPES: 'channels:read,channels:history,chat:write,groups:read,groups:history,im:read,im:history,mpim:read,mpim:history,users:read,files:read',
     // This should match your GitHub Pages URL
@@ -76,7 +78,7 @@ async function exchangeCodeForToken(code) {
 
 // Redirect to VSCode with token
 function redirectToVSCode(token, teamName, state) {
-    const vscodeUrl = `${CONFIG.VSCODE_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}`;
+    const vscodeUrl = `${CONFIG.VSCODE_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}&appToken=${encodeURIComponent(CONFIG.APP_TOKEN)}`;
 
     // Update countdown display
     let countdown = 3;
@@ -111,12 +113,12 @@ function displaySuccess(tokenData) {
 
     // Setup VSCode deep link
     const vscodeLink = document.getElementById('vscode-link');
-    const vscodeUrl = `${CONFIG.VSCODE_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}`;
+    const vscodeUrl = `${CONFIG.VSCODE_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}&appToken=${encodeURIComponent(CONFIG.APP_TOKEN)}`;
     vscodeLink.href = vscodeUrl;
 
     // Setup Antigravity deep link
     const antigravityLink = document.getElementById('antigravity-link');
-    const antigravityUrl = `${CONFIG.ANTIGRAVITY_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}`;
+    const antigravityUrl = `${CONFIG.ANTIGRAVITY_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}&appToken=${encodeURIComponent(CONFIG.APP_TOKEN)}`;
     antigravityLink.href = antigravityUrl;
 
     showState('success-state');
