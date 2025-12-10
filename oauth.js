@@ -13,7 +13,8 @@ const CONFIG = {
     get REDIRECT_URI() {
         return window.location.origin + window.location.pathname;
     },
-    VSCODE_URI_SCHEME: 'vscode://fos.vscode-slack-chat/callback'
+    VSCODE_URI_SCHEME: 'vscode://fos.vscode-slack-chat/callback',
+    ANTIGRAVITY_URI_SCHEME: 'antigravity://fos.vscode-slack-chat/callback'
 };
 
 // Store token for copy function
@@ -112,11 +113,15 @@ function displaySuccess(tokenData) {
     const vscodeLink = document.getElementById('vscode-link');
     const vscodeUrl = `${CONFIG.VSCODE_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}`;
     vscodeLink.href = vscodeUrl;
-    vscodeLink.style.display = 'inline-flex';
+
+    // Setup Antigravity deep link
+    const antigravityLink = document.getElementById('antigravity-link');
+    const antigravityUrl = `${CONFIG.ANTIGRAVITY_URI_SCHEME}?token=${encodeURIComponent(token)}&team=${encodeURIComponent(teamName)}&state=${state || ''}`;
+    antigravityLink.href = antigravityUrl;
 
     showState('success-state');
 
-    // Auto-redirect to VSCode
+    // Auto-redirect to VSCode (can be changed to Antigravity if preferred)
     redirectToVSCode(token, teamName, state);
 }
 

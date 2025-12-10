@@ -144,6 +144,7 @@
             align-items: center;
             gap: 8px;
             margin-top: 8px;
+            white-space: nowrap;
         }
 
         .copy-btn:hover {
@@ -204,13 +205,32 @@
             padding: 12px 24px;
             border-radius: 10px;
             font-weight: 500;
-            margin-top: 16px;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .vscode-link:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 122, 204, 0.3);
+        }
+
+        .antigravity-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .antigravity-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(147, 51, 234, 0.3);
         }
 
         .error-details {
@@ -422,9 +442,14 @@
                     <span id="copy-icon">📋</span>
                     <span id="copy-text">Copy Token</span>
                 </button>
+            </div>
 
-                <a id="vscode-link" class="vscode-link" style="display: none;">
-                    🚀 Open in VSCode Now
+            <div class="action-buttons">
+                <a id="vscode-link" class="vscode-link">
+                    💻 Open in VSCode
+                </a>
+                <a id="antigravity-link" class="antigravity-link">
+                    🚀 Open in Antigravity
                 </a>
             </div>
 
