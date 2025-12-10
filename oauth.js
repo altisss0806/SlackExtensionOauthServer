@@ -7,7 +7,7 @@ const CONFIG = {
     CLIENT_ID: '9129744248003.10087834431718',
     CLIENT_SECRET: '9ecc93f5bb1f8d7a7f247364970c03df',
     // App-Level Token for Socket Mode (xapp-...)
-    APP_TOKEN: 'xapp-1-A0A2KQJCPM4-10087321682515-50a1d04f615841ccda1f1ec76bb0fd5cb49f613a110bddd471c39826fcebe608',
+    APP_TOKEN: 'xapp-1-A0A2KQJCPM4-10087489028931-0c98ce9bf571718e371749038f636e7c309dfa4c0928977b56846605fbc3c758',
     // User scopes for OAuth - these are the permissions required
     USER_SCOPES: 'channels:read,channels:history,chat:write,groups:read,groups:history,im:read,im:history,mpim:read,mpim:history,users:read,files:read',
     // This should match your GitHub Pages URL
